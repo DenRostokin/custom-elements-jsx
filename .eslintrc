@@ -1,0 +1,44 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true
+  },
+  "globals": {
+    "__dirname": true,
+    "window": true,
+    "document": true,
+    "localStorage": true,
+    "process": true,
+    "setImmediate": true,
+    "CONFIG": true
+  },
+  "extends": ["eslint:recommended"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "rules": {
+    "comma-dangle": [
+      "warn",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "never"
+      }
+    ],
+    "getter-return": 0,
+    "import/prefer-default-export": 0,
+    "indent": ["error", 4],
+    "linebreak-style": ["error", "unix"],
+    "max-len": ["error", { "code": 80 }],
+    "no-console": 0,
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"]
+  }
+}
