@@ -1,4 +1,12 @@
 {
   "presets": ["@babel/preset-env"],
-  "plugins": [["@babel/plugin-proposal-class-properties", { "loose": true }]]
+  "plugins": [["@babel/plugin-proposal-class-properties", { "loose": true }]],
+  "env": {
+    "test": {
+      "plugins": [
+        ["@babel/plugin-transform-react-jsx", { "pragma": "jsx" }],
+        "@babel/plugin-syntax-jsx"
+      ]
+    }
+  }
 }
