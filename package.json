@@ -7,7 +7,9 @@
     "build": "rimraf lib/* && babel src --out-dir lib",
     "livereload": "nodemon --ignore 'lib/' --exec npm run build",
     "prepublish": "npm run build",
-    "test": "jest"
+    "test": "jest --colors",
+    "test:watch": "jest --colors --watchAll",
+    "test:coverage": "jest --colors --coverage"
   },
   "keywords": [
     "jsx",
