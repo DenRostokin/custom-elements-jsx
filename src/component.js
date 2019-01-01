@@ -28,7 +28,7 @@ class Component extends HTMLElement {
         }
     }
 
-    setState(newState) {
+    setState = newState => {
         this.state = { ...newState }
 
         this.update()
