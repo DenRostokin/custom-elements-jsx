@@ -1,28 +1,19 @@
 class Component extends HTMLElement {
-    _componentShadowRoot = this.attachShadow({ mode: 'open' })
-
     state = {}
 
-    _setChildren() {
-        this.props.children = this.childNodes.length
-            ? Array.prototype.slice.call(this.childNodes)
-            : null
-    }
-
     connectedCallback() {
-        this._setChildren()
-
-        this._componentShadowRoot.appendChild(this.render())
+        this.appendChild(this.render())
 
         this.componentDidMount()
     }
 
+    disconnectedCallback() {
+        this.componentWillUnmount()
+    }
+
     update = () => {
-        if (this._componentShadowRoot.children.length) {
-            this._componentShadowRoot.replaceChild(
-                this.render(),
-                this._componentShadowRoot.children[0]
-            )
+        if (this.children.length) {
+            this.replaceChild(this.render(), this.children[0])
 
             this.componentDidUpdate()
         }
@@ -37,6 +28,8 @@ class Component extends HTMLElement {
     componentDidMount() {}
 
     componentDidUpdate() {}
+
+    componentWillUnmount() {}
 
     render() {
         return null

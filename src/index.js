@@ -79,14 +79,14 @@ const jsx = (tagName, attrs, ...children) => {
         ? document.createElementNS('http://www.w3.org/2000/svg', tagName)
         : document.createElement(tagName)
 
-    // if we have custom element we should add all attributes to it props
-    // but first of all we should create props object of this element
-    if (utils.isCustomElement(element)) element.props = {}
+    // create children fragment and append it to the main element
+    if (utils.isCustomElement(element)) {
+        element.props = { children }
+    } else {
+        const fragment = createFragmentWithChildren(children)
 
-    // create children and append it to the main element
-    const fragment = createFragmentWithChildren(children)
-
-    element.appendChild(fragment)
+        element.appendChild(fragment)
+    }
 
     // add attributes to the main element.
     // if we have custom element, then attributes will be added like props
