@@ -1,8 +1,12 @@
 {
   "name": "custom-elements-jsx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JSX-render for custom elements",
   "main": "lib",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DenRostokin/custom-elements-jsx.git"
+  },
   "scripts": {
     "build": "rimraf lib/* && babel src --out-dir lib",
     "livereload": "nodemon --ignore 'lib/' --exec npm run build",
