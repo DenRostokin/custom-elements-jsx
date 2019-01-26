@@ -7,11 +7,18 @@ const addAttributes = (element, attrs) => {
 
     props.forEach(([propName, propValue]) => {
         // if we have custom element then we should add attribute to props
-        if (utils.isCustomElement(element))
+        if (utils.isCustomElement(element)) {
+            // add id to the custom element attributes cause may be you will
+            // need find the element using document.getElementById 
+            if (propName === 'id') {
+                element.setAttribute('id', propValue)
+            }
+
             return (element.props = {
                 ...element.props,
                 [propName]: propValue,
             })
+        }
 
         if (propName === 'className')
             return element.setAttribute('class', propValue)
