@@ -1,6 +1,4 @@
 class Component extends HTMLElement {
-    state = {}
-
     connectedCallback() {
         this.appendChild(this.render())
 
@@ -19,12 +17,6 @@ class Component extends HTMLElement {
         }
     }
 
-    setState = newState => {
-        this.state = { ...newState }
-
-        this.update()
-    }
-
     componentDidMount() {}
 
     componentDidUpdate() {}
@@ -32,7 +24,7 @@ class Component extends HTMLElement {
     componentWillUnmount() {}
 
     render() {
-        return null
+        return document.createElement('div')
     }
 }
 
