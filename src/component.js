@@ -1,5 +1,11 @@
 class Component extends HTMLElement {
+    constructor() {
+        super()
+    }
+
     connectedCallback() {
+        this.componentDidCreate()
+
         this.appendChild(this.render())
 
         this.componentDidMount()
@@ -16,6 +22,7 @@ class Component extends HTMLElement {
             this.componentDidUpdate()
         }
     }
+    componentDidCreate() {}
 
     componentDidMount() {}
 
