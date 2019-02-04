@@ -6,7 +6,11 @@ class Component extends HTMLElement {
     connectedCallback() {
         this.componentDidCreate()
 
-        this.appendChild(this.render())
+        const content = this.render()
+
+        if (content) {
+            this.appendChild(content)
+        }
 
         this.componentDidMount()
     }
@@ -16,12 +20,23 @@ class Component extends HTMLElement {
     }
 
     update = () => {
-        if (this.children.length) {
-            this.replaceChild(this.render(), this.children[0])
+        const content = this.render()
 
-            this.componentDidUpdate()
+        if (content) {
+            if (this.children.length) {
+                this.replaceChild(content, this.children[0])
+            } else {
+                this.appendChild(content)
+            }
+        } else {
+            if (this.children.length) {
+                this.removeChild(this.children[0])
+            }
         }
+
+        this.componentDidUpdate()
     }
+
     componentDidCreate() {}
 
     componentDidMount() {}
@@ -31,7 +46,7 @@ class Component extends HTMLElement {
     componentWillUnmount() {}
 
     render() {
-        return document.createElement('div')
+        return null
     }
 }
 
