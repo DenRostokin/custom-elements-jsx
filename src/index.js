@@ -58,24 +58,31 @@ const addAttributes = (element, attrs) => {
     return element
 }
 
-const fillFragmentByChildren = (fragment, child) => {
+const fillFragmentByChildren = (fragment, props, child) => {
     if (child) {
         if (typeof child === 'string' || typeof child === 'number') {
             const textnode = document.createTextNode(child)
-            fragment.appendChild(textnode)
-        } else if (child instanceof Array) {
-            child.forEach(fillFragmentByChildren.bind(this, fragment))
-        } else {
-            fragment.appendChild(child)
+
+            return fragment.appendChild(textnode)
         }
+
+        if (child instanceof Array) {
+            return child.forEach(
+                fillFragmentByChildren.bind(this, fragment, props)
+            )
+        }
+
+        child.props = { ...child.props, ...props }
+
+        fragment.appendChild(child)
     }
 }
 
-const createFragmentWithChildren = children => {
+export const createFragmentWithChildren = (children, props = {}) => {
     const fragment = document.createDocumentFragment()
 
     // fill fragment by children
-    children.forEach(fillFragmentByChildren.bind(this, fragment))
+    children.forEach(fillFragmentByChildren.bind(this, fragment, props))
 
     return fragment
 }
