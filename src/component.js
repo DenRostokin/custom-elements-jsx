@@ -3,36 +3,30 @@ class Component extends HTMLElement {
         super()
     }
 
-    connectedCallback() {
-        this.componentDidCreate()
-
-        const content = this.render()
+    _addContent(content) {
+        this.innerHTML = ''
 
         if (content) {
             this.appendChild(content)
         }
+    }
+
+    connectedCallback() {
+        this.componentDidCreate()
+
+        this._addContent(this.render())
 
         this.componentDidMount()
     }
 
     disconnectedCallback() {
+        this.innerHTML = ''
+
         this.componentWillUnmount()
     }
 
     update = () => {
-        const content = this.render()
-
-        if (content) {
-            if (this.children.length) {
-                this.replaceChild(content, this.children[0])
-            } else {
-                this.appendChild(content)
-            }
-        } else {
-            if (this.children.length) {
-                this.removeChild(this.children[0])
-            }
-        }
+        this._addContent(this.render())
 
         this.componentDidUpdate()
     }
