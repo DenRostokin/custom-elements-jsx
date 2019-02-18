@@ -8,10 +8,15 @@ const addAttributes = (element, attrs) => {
     props.forEach(([propName, propValue]) => {
         // if we have custom element then we should add attribute to props
         if (utils.isCustomElement(element)) {
-            // add id to the custom element attributes cause may be you will
-            // need find the element using document.getElementById
-            if (propName === 'id') {
-                element.setAttribute('id', propValue)
+            // add special attributes like id, data- or aria-attributes
+            const hasSpecialAttrs =
+                propName === 'id' ||
+                propName === 'role' ||
+                propName.includes('data-') ||
+                propName.includes('aria-')
+
+            if (hasSpecialAttrs) {
+                element.setAttribute(propName, propValue)
             }
 
             return (element.props = {
@@ -88,6 +93,11 @@ export const createFragmentWithChildren = (children, props = {}) => {
 }
 
 const jsx = (tagName, attrs, ...children) => {
+    // <custom-fragment> element
+    if (tagName === 'custom-fragment') {
+        return createFragmentWithChildren(children)
+    }
+
     // create main element
     const element = utils.isSVG(tagName)
         ? document.createElementNS('http://www.w3.org/2000/svg', tagName)

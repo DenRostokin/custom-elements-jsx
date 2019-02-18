@@ -1,6 +1,6 @@
 import jsx from '../src'
 
-describe('Simple jsx tests', () => {
+describe('Simple jsx tests: ', () => {
     it('Basic Single Component <div /> renders correctly', () => {
         const render = () => {
             return <div />
@@ -112,12 +112,30 @@ describe('Component', () => {
         )
     })
 
-    it('with classname renders correctly', () => {
+    it('with className renders correctly', () => {
         const render = () => {
             return <p className="chan">Lorem</p>
         }
 
         expect(render().outerHTML).toBe('<p class="chan">Lorem</p>')
+    })
+
+    it('with style renders correctly', () => {
+        const render = () => {
+            return (
+                <div
+                    style={{
+                        color: '#000',
+                        marginTop: '10px',
+                        'padding-left': '15px',
+                    }}
+                />
+            )
+        }
+
+        expect(render().outerHTML).toBe(
+            '<div style="color: rgb(0, 0, 0); margin-top: 10px; padding-left: 15px;"></div>'
+        )
     })
 
     it('render dangerouslySetInnerHTML correctly', () => {

@@ -1,3 +1,5 @@
+import { createFragmentWithChildren } from './index'
+
 class Component extends HTMLElement {
     constructor() {
         super()
@@ -7,7 +9,11 @@ class Component extends HTMLElement {
         this.innerHTML = ''
 
         if (content) {
-            this.appendChild(content)
+            if (content instanceof Array) {
+                return this.appendChild(createFragmentWithChildren(content))
+            }
+
+            return this.appendChild(content)
         }
     }
 
