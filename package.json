@@ -11,9 +11,7 @@
     "build": "rimraf lib/* && babel src --out-dir lib",
     "livereload": "nodemon --ignore 'lib/' --exec npm run build",
     "prepublish": "npm run build",
-    "test": "export NODE_ENV='test' && karma start",
-    "test:watch": "jest --colors --watchAll",
-    "test:coverage": "jest --colors --coverage"
+    "test": "export NODE_ENV='test' && karma start"
   },
   "keywords": [
     "jsx",
@@ -36,9 +34,11 @@
     "clean-webpack-plugin": "^1.0.0",
     "eslint": "^5.11.1",
     "eslint-plugin-jasmine": "^2.10.1",
+    "istanbul": "^0.4.5",
     "jasmine-core": "^3.3.0",
     "karma": "^4.0.0",
     "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.2",
     "karma-jasmine": "^2.0.1",
     "karma-webpack": "^3.0.5",
     "nodemon": "^1.18.9",

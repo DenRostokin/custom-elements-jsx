@@ -114,6 +114,54 @@ describe('Custom Element', () => {
 
         document.body.removeChild(element)
     })
+
+    it('gets refs correctly', () => {
+        class RefElement extends Component {
+            getRef = (element, attrs) => {
+                this.ref = element
+                this.attrs = attrs
+            }
+
+            render() {
+                return <div id="root" ref={this.getRef} />
+            }
+        }
+
+        window.customElements.define('ref-element', RefElement)
+
+        const element = <ref-element />
+
+        document.body.appendChild(element)
+
+        expect(element.ref.tagName).toBe('DIV')
+        expect(element.attrs.id).toBe('root')
+
+        document.body.removeChild(element)
+    })
+
+    it('adds event listeners correctly', () => {
+        class EventElement extends Component {
+            onClick = () => (this.value = 'clicked')
+
+            render() {
+                return <div onClick={this.onClick} />
+            }
+        }
+
+        window.customElements.define('event-element', EventElement)
+
+        const element = <event-element />
+
+        document.body.appendChild(element)
+
+        const event = new Event('click')
+
+        element.children[0].dispatchEvent(event)
+
+        expect(element.value).toBe('clicked')
+
+        document.body.removeChild(element)
+    })
 })
 
 describe('Custom fragment', () => {
