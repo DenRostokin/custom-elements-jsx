@@ -1,5 +1,7 @@
 ## Custom elements JSX-render
 
+[![travis](https://travis-ci.org/DenRostokin/custom-elements-jsx.svg?branch=master)](https://travis-ci.org/DenRostokin/custom-elements-jsx)
+
 Small library for creating HTMLElements from JSX markup
 
 ### How to install
