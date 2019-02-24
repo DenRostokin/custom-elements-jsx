@@ -10,8 +10,11 @@
   "scripts": {
     "build": "rimraf lib/* && babel src --out-dir lib",
     "livereload": "nodemon --ignore 'lib/' --exec npm run build",
-    "prepublish": "npm run build",
-    "test": "export NODE_ENV='test' && karma start"
+    "test": "export NODE_ENV='test' && karma start",
+    "test:watch": "export NODE_ENV='test' && karma start karmaWatch.config.js",
+    "prepush": "npm run test",
+    "precommit": "npm run test && npm run build",
+    "prepublish": "npm run test && npm run build"
   },
   "keywords": [
     "jsx",
