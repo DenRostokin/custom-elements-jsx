@@ -9,7 +9,7 @@ Small library for creating HTMLElements from JSX markup
 - [How To Install](#how-to-install)
 - [Usage](#usage)
 - [Features](#features)
-- [How To test](recipes/testing.md)
+- [How to test](recipes/testing.md)
 
 ### How to install
 
@@ -69,7 +69,7 @@ if (!window.customElements.get("custom-element"))
 Remember that you must use dash in the custom elements names.
 **[Specification is here](https://developers.google.com/web/fundamentals/web-components/customelements)**
 
-Now you can use this component inside of other custom elements or append in to the root element:
+Now you can use this component inside of other custom elements or append it to the root element:
 
 ```jsx
 const element = <custom-element age={26}>Den</custom-element>;
@@ -155,7 +155,7 @@ class CustomChild extends Component {
   render() {
     const { name } = this.props;
 
-    return <h3>{name}</h3>;
+    return <h1>{name}</h1>;
   }
 }
 
@@ -194,7 +194,7 @@ After that you will get the markup like this:
 
 ### How to test
 
-To test this library you need to install Chrome browset if you don`t have. Then you need to run:
+To test this library you need to install Chrome browser if you still don`t have. Then you need to run:
 
 ```sh
   npm install && npm run test
