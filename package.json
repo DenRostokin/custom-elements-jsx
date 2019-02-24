@@ -16,7 +16,7 @@
     "prepublish": "npm run test && npm run build"
   },
   "pre-commit": [
-    "precommit"
+    "build"
   ],
   "keywords": [
     "jsx",
