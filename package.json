@@ -12,11 +12,11 @@
     "livereload": "nodemon --ignore 'lib/' --exec npm run build",
     "test": "export NODE_ENV='test' && karma start",
     "test:watch": "export NODE_ENV='test' && karma start karmaWatch.config.js",
-    "precommit": "npm run test && npm run build",
-    "prepublish": "npm run test && npm run build"
+    "precommit": "npm run build && git add . && npm run test",
+    "prepublish": "npm run build && git add . && npm run test"
   },
   "pre-commit": [
-    "build"
+    "precommit"
   ],
   "keywords": [
     "jsx",
