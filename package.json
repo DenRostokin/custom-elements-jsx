@@ -1,6 +1,6 @@
 {
   "name": "custom-elements-jsx",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "JSX-render for custom elements",
   "main": "lib",
   "repository": {
