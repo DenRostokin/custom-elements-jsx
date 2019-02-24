@@ -9,7 +9,7 @@ Small library for creating HTMLElements from JSX markup
 - [How To Install](#how-to-install)
 - [Usage](#usage)
 - [Features](#features)
-- [How to test](recipes/testing.md)
+- [How To Test](#how-to-test)
 
 ### How to install
 
