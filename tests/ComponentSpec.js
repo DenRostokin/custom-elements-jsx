@@ -162,6 +162,26 @@ describe('Custom Element', () => {
 
         document.body.removeChild(element)
     })
+
+    it('renders single attribute as true in props object', () => {
+        class SingleAttr extends Component {
+            render() {
+                const { isTrue } = this.props
+
+                return <div>{String(isTrue)}</div>
+            }
+        }
+
+        window.customElements.define('single-attr', SingleAttr)
+
+        const element = <single-attr isTrue />
+
+        document.body.appendChild(element)
+
+        expect(element.innerHTML).toBe('<div>true</div>')
+
+        document.body.removeChild(element)
+    })
 })
 
 describe('Custom fragment', () => {
