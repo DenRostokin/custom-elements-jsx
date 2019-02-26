@@ -138,7 +138,7 @@ describe('Component', () => {
         )
     })
 
-    it('render dangerouslySetInnerHTML correctly', () => {
+    it('renders dangerouslySetInnerHTML correctly', () => {
         const render = () => {
             return (
                 <div
