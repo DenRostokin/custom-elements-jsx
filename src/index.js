@@ -45,9 +45,7 @@ const addAttributes = (element, attrs) => {
             propName.toLowerCase() in element &&
             typeof propValue === 'function'
         ) {
-            const eventName = utils.getEventName(propName)
-
-            return element.addEventListener(eventName, propValue)
+            return (element[propName.toLocaleLowerCase()] = propValue)
         }
 
         if (propName === 'xlinkHref')

@@ -212,3 +212,45 @@ describe('Custom fragment', () => {
         document.body.removeChild(element)
     })
 })
+
+describe('Custom element`s update function', () => {
+    it('does not delete children from DOM', () => {
+        class RootElement extends Component {
+            render() {
+                return <child-element />
+            }
+        }
+
+        class ChildElement extends Component {
+            value = 1
+
+            increaseValue = () => this.value++
+
+            render() {
+                return <h3>{this.value}</h3>
+            }
+        }
+
+        window.customElements.define('root-element', RootElement)
+        window.customElements.define('child-element', ChildElement)
+
+        const root = <root-element />
+
+        document.body.appendChild(root)
+
+        let child = root.children[0]
+
+        child.increaseValue()
+
+        root.update()
+
+        child = root.children[0]
+
+        expect(child.value).toBe(2)
+        expect(child.outerHTML).toBe(
+            '<child-element><h3>2</h3></child-element>'
+        )
+
+        document.body.removeChild(root)
+    })
+})
