@@ -1,3 +1,6 @@
+export const areSameNodes = (el1, el2) =>
+    el1 && el2 && el1.tagName && el2.tagName && el1.tagName === el2.tagName
+
 export const isSVG = tagName => {
     const SVGTags = ['path', 'svg', 'use', 'g']
 
@@ -17,4 +20,13 @@ export const objectToStyleString = (styles = {}) =>
         )
         .join(';')
 
-export const getEventName = name => name.slice(2).toLowerCase()
+export const setAttribute = (element, name, value) => {
+    if (name === 'xlinkHref')
+        return element.setAttributeNS(
+            'http://www.w3.org/1999/xlink',
+            'xlink:href',
+            value
+        )
+
+    return element.setAttribute(name, value)
+}

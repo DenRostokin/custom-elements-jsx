@@ -41,21 +41,14 @@ const addAttributes = (element, attrs) => {
 
         // if we have correct event name and event handler is a function
         // then add it to an event listener
-        if (
-            propName.toLowerCase() in element &&
-            typeof propValue === 'function'
-        ) {
-            return (element[propName.toLocaleLowerCase()] = propValue)
+        if (typeof propValue === 'function') {
+            const eventName = propName.toLowerCase()
+
+            return (element[eventName] =
+                eventName in element ? propValue : null)
         }
 
-        if (propName === 'xlinkHref')
-            return element.setAttributeNS(
-                'http://www.w3.org/1999/xlink',
-                'xlink:href',
-                propValue
-            )
-
-        element.setAttribute(propName, propValue)
+        utils.setAttribute(element, propName, propValue)
     })
 
     return element

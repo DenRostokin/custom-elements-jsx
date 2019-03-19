@@ -1,5 +1,5 @@
 import { createFragmentWithChildren } from './index'
-import { isCustomElement } from './utils'
+import { isCustomElement, setAttribute, areSameNodes } from './utils'
 
 class Component extends HTMLElement {
     constructor() {
@@ -38,31 +38,20 @@ class Component extends HTMLElement {
     _cloneAttributes(newChild, existChild) {
         if (newChild.hasAttributes()) {
             [...newChild.attributes].forEach(({ name, value }) => {
-                if (name === 'xlinkHref') {
-                    existChild.setAttributeNS(
-                        'http://www.w3.org/1999/xlink',
-                        'xlink:href',
-                        value
-                    )
+                // don't change value attribute
+                if (name === 'value') {
+                    existChild.value = newChild.value
                 } else {
-                    existChild.setAttribute(name, value)
+                    const attr = existChild.getAttribute(name)
+
+                    if (attr !== value) setAttribute(existChild, name, value)
                 }
             })
         }
     }
 
     _mergeNodes(newChild, existChild, parentNode) {
-        if (!existChild && !newChild) return
-
-        if (existChild && !newChild) return parentNode.removeChild(existChild)
-
-        if (!existChild && newChild) return parentNode.appendChild(newChild)
-
-        if (
-            existChild.tagName &&
-            newChild.tagName &&
-            existChild.tagName === newChild.tagName
-        ) {
+        if (areSameNodes(newChild, existChild)) {
             // add attributes
             this._cloneAttributes(newChild, existChild)
 
@@ -86,7 +75,11 @@ class Component extends HTMLElement {
             )
         }
 
-        return parentNode.replaceChild(newChild, existChild)
+        if (existChild && newChild) {
+            return parentNode.replaceChild(newChild, existChild)
+        }
+
+        if (newChild) return parentNode.appendChild(newChild)
     }
 
     _updateContent(
@@ -119,27 +112,23 @@ class Component extends HTMLElement {
 
         // newContent is collection
         if (typeof newContent[Symbol.iterator] === 'function') {
-            // remove existing children that are not in the newContent
+            if (newContent.length) {
+                return [...newContent].forEach((newChild, index) => {
+                    const existChild = existChildren[index]
 
-            [...newContent].forEach((newChild, index) => {
-                const existChild = existChildren[index]
+                    return this._mergeNodes(newChild, existChild, parentNode)
+                })
+            }
 
-                return this._mergeNodes(newChild, existChild, parentNode)
-            })
-
-            // for (let i = newContent.length; i < existChildren.length; i++) {
-            //     parentNode.removeChild(existChildren[i])
-            // }
-
-            return
+            return (parentNode.innerHTML = '')
         }
 
         // newContent is HTMLElement
         this._mergeNodes(newContent, existChildren[0], parentNode)
 
-        for (let i = 1; i < existChildren.length; i++) {
-            parentNode.removeChild(existChildren[i])
-        }
+        // for (let i = 1; i < existChildren.length; i++) {
+        //     parentNode.removeChild(existChildren[i])
+        // }
     }
 
     connectedCallback() {
