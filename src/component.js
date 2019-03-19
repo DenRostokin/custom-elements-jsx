@@ -39,6 +39,7 @@ class Component extends HTMLElement {
         if (newChild.hasAttributes()) {
             [...newChild.attributes].forEach(({ name, value }) => {
                 // don't change value attribute
+                // change value property
                 if (name === 'value') {
                     existChild.value = newChild.value
                 } else {
@@ -52,19 +53,18 @@ class Component extends HTMLElement {
 
     _mergeNodes(newChild, existChild, parentNode) {
         if (areSameNodes(newChild, existChild)) {
-            // add attributes
+            // add new attributes
             this._cloneAttributes(newChild, existChild)
 
-            // add props to custom element
+            // add new props to custom element
             if (isCustomElement(existChild)) {
-                // add props
                 existChild.props = newChild.props
 
                 // exec update function
                 return existChild.update()
             }
 
-            // add event handlers
+            // add new event handlers
             this._cloneEventHandlers(newChild, existChild)
 
             // update children
@@ -75,11 +75,16 @@ class Component extends HTMLElement {
             )
         }
 
+        // There are not same nodes. Replace them
         if (existChild && newChild) {
             return parentNode.replaceChild(newChild, existChild)
         }
 
-        if (newChild) return parentNode.appendChild(newChild)
+        // Was added new child to the empty place. Append It
+        if (!existChild && newChild) return parentNode.appendChild(newChild)
+
+        // Exist child should be replaced by nothing. Remove exist child
+        if (existChild && !newChild) return parentNode.removeChild(existChild)
     }
 
     _updateContent(
@@ -125,10 +130,6 @@ class Component extends HTMLElement {
 
         // newContent is HTMLElement
         this._mergeNodes(newContent, existChildren[0], parentNode)
-
-        // for (let i = 1; i < existChildren.length; i++) {
-        //     parentNode.removeChild(existChildren[i])
-        // }
     }
 
     connectedCallback() {
@@ -162,7 +163,7 @@ class Component extends HTMLElement {
 
     setState(newState) {
         if (typeof newState === 'function') {
-            this.state = newState(this.state)
+            this.state = newState({ ...this.state })
         } else {
             this.state = newState
         }
