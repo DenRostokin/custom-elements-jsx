@@ -27,12 +27,15 @@ class Component extends HTMLElement {
         }
     }
 
-    _cloneEventHandlers(newChild, existChild) {
+    _cloneEventHandlers(newChild = {}, existChild = {}) {
+        const keys = Object.keys(newChild) || []
         const regexp = /^(on[a-z]+)$/i
 
-        for (let key in newChild) {
-            if (regexp.test(key)) existChild[key] = newChild[key]
-        }
+        keys.forEach(key => {
+            if (regexp.test(key)) {
+                existChild[key] = newChild[key]
+            }
+        })
     }
 
     _cloneAttributes(newChild, existChild) {
