@@ -54,10 +54,12 @@ const addAttributes = (element, attrs) => {
     return element
 }
 
-const fillFragmentByChildren = (fragment, props, child) => {
+const fillFragmentByChildren = (fragment, props, child, index) => {
     if (child) {
         if (typeof child === 'string' || typeof child === 'number') {
             const textnode = document.createTextNode(child)
+
+            textnode.__DOMPosition__ = index
 
             return fragment.appendChild(textnode)
         }
@@ -68,7 +70,10 @@ const fillFragmentByChildren = (fragment, props, child) => {
             )
         }
 
-        child.props = { ...child.props, ...props }
+        if (utils.isCustomElement(child))
+            child.props = { ...child.props, ...props }
+
+        child.__DOMPosition__ = index
 
         fragment.appendChild(child)
     }
@@ -105,7 +110,7 @@ const jsx = (tagName, attrs, ...children) => {
 
     // add attributes to the main element.
     // if we have custom element, then attributes will be added like props
-    // if we haven`t then like simple attributes
+    // if we haven`t than as simple attributes
     return addAttributes(element, attrs)
 }
 

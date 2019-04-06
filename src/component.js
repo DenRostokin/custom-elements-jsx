@@ -1,5 +1,5 @@
 import { createFragmentWithChildren } from './index'
-import { isCustomElement, setAttribute, areSameNodes } from './utils'
+import { isCustomElement, setAttribute, areSameTagNames } from './utils'
 
 class Component extends HTMLElement {
     constructor() {
@@ -32,7 +32,8 @@ class Component extends HTMLElement {
         const regexp = /^(on[a-z]+)$/i
 
         keys.forEach(key => {
-            if (regexp.test(key)) {
+            // if key is an event name and some of events exist
+            if (regexp.test(key) && (existChild[key] || newChild[key])) {
                 existChild[key] = newChild[key]
             }
         })
@@ -55,7 +56,7 @@ class Component extends HTMLElement {
     }
 
     _mergeNodes(newChild, existChild, parentNode) {
-        if (areSameNodes(newChild, existChild)) {
+        if (areSameTagNames(newChild, existChild)) {
             // add new attributes
             this._cloneAttributes(newChild, existChild)
 
@@ -78,16 +79,60 @@ class Component extends HTMLElement {
             )
         }
 
-        // There are not same nodes. Replace them
-        if (existChild && newChild) {
-            return parentNode.replaceChild(newChild, existChild)
+        parentNode.replaceChild(newChild, existChild)
+    }
+
+    _mergeCollections(newContent, existChildren, parentNode) {
+        if (newContent.length) {
+            let i, j
+
+            for (i = 0, j = 0; i < newContent.length; ++i, ++j) {
+                const newChild = newContent[i]
+                const newChildPosition =
+                    typeof newChild.__DOMPosition__ === 'number'
+                        ? newChild.__DOMPosition__
+                        : 0
+                const existChild = existChildren[j]
+                const existChildPosition =
+                    existChild && typeof existChild.__DOMPosition__ === 'number'
+                        ? existChild.__DOMPosition__
+                        : 0
+
+                if (!existChild) {
+                    parentNode.appendChild(newChild)
+
+                    continue
+                }
+
+                if (newChildPosition < existChildPosition) {
+                    parentNode.insertBefore(newChild, existChild)
+
+                    --j
+
+                    continue
+                }
+
+                if (newChildPosition > existChildPosition) {
+                    parentNode.removeChild(existChild)
+
+                    --i
+
+                    continue
+                }
+
+                if (newChildPosition === existChildPosition) {
+                    this._mergeNodes(newChild, existChild, parentNode)
+                }
+            }
+
+            if (existChildren[j]) {
+                for (i = j; i < existChildren.length; ++i) {
+                    parentNode.removeChild(existChildren[i])
+                }
+            }
+        } else {
+            parentNode.innerHTML = ''
         }
-
-        // Was added new child to the empty place. Append It
-        if (!existChild && newChild) return parentNode.appendChild(newChild)
-
-        // Exist child should be replaced by nothing. Remove exist child
-        if (existChild && !newChild) return parentNode.removeChild(existChild)
     }
 
     _updateContent(
@@ -100,7 +145,7 @@ class Component extends HTMLElement {
         // or DocumentFragment, or Array, or (null | undefined | false)
 
         // newContent is null | undefined | false
-        if (!newContent) return this._removeContent()
+        if (!newContent) return (parentNode.innerHTML = '')
 
         // newContent is array
         if (Array.isArray(newContent))
@@ -118,21 +163,14 @@ class Component extends HTMLElement {
                 parentNode
             )
 
-        // newContent is collection
-        if (typeof newContent[Symbol.iterator] === 'function') {
-            if (newContent.length) {
-                return [...newContent].forEach((newChild, index) => {
-                    const existChild = existChildren[index]
+        // if newContent is already collection then do nothing. if it's not,
+        // then newContent is HTMLElement and we must create array with it
+        const newCollection =
+            typeof newContent[Symbol.iterator] === 'function'
+                ? [...newContent]
+                : [newContent]
 
-                    return this._mergeNodes(newChild, existChild, parentNode)
-                })
-            }
-
-            return (parentNode.innerHTML = '')
-        }
-
-        // newContent is HTMLElement
-        this._mergeNodes(newContent, existChildren[0], parentNode)
+        this._mergeCollections(newCollection, [...existChildren], parentNode)
     }
 
     connectedCallback() {
@@ -150,7 +188,6 @@ class Component extends HTMLElement {
     }
 
     update() {
-        // debugger
         this._updateContent(this.render())
 
         this.componentDidUpdate()
@@ -166,7 +203,7 @@ class Component extends HTMLElement {
 
     setState(newState) {
         if (typeof newState === 'function') {
-            this.state = newState({ ...this.state })
+            this.state = newState({ ...this.state }, { ...this.props })
         } else {
             this.state = newState
         }

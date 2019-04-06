@@ -1,5 +1,5 @@
-export const areSameNodes = (el1, el2) =>
-    el1 && el2 && el1.tagName && el2.tagName && el1.tagName === el2.tagName
+export const areSameTagNames = (el1 = {}, el2 = {}) =>
+    el1.tagName && el2.tagName && el1.tagName === el2.tagName
 
 export const isSVG = tagName => {
     const SVGTags = ['path', 'svg', 'use', 'g']
