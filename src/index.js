@@ -2,27 +2,26 @@ import * as utils from './utils'
 
 export { default as Component } from './component'
 
-const addAttributes = (element, attrs) => {
+const addAttributes = (element, attrs = {}) => {
     const props = Object.entries(attrs || {})
 
     props.forEach(([propName, propValue]) => {
-        // if we have custom element then we should add attribute to props
         if (utils.isCustomElement(element)) {
-            // add special attributes like id, data- or aria-attributes
-            const hasSpecialAttrs =
-                propName === 'id' ||
-                propName === 'role' ||
-                propName.includes('data-') ||
-                propName.includes('aria-')
+            // In "catch" prop is stored props that must be added as attributes
+            // or event handlers
+            let propsCatch = []
 
-            if (hasSpecialAttrs) {
-                element.setAttribute(propName, propValue)
+            if (Array.isArray(attrs.catch)) propsCatch = attrs.catch
+            if (typeof attrs.catch === 'string') propsCatch = [attrs.catch]
+
+            if (propName === 'catch') return
+
+            if (!propsCatch.includes(propName)) {
+                return (element.props = {
+                    ...element.props,
+                    [propName]: propValue,
+                })
             }
-
-            return (element.props = {
-                ...element.props,
-                [propName]: propValue,
-            })
         }
 
         if (propName === 'className')
@@ -39,16 +38,21 @@ const addAttributes = (element, attrs) => {
         if (propName === 'dangerouslySetInnerHTML')
             return (element.innerHTML = propValue.__html)
 
-        // if we have correct event name and event handler is a function
-        // then add it to an event listener
+        // if attr value is a function then add it as element property
         if (typeof propValue === 'function') {
             const eventName = propName.toLowerCase()
+            const regexp = /^(on[a-z]+)$/i
 
-            return (element[eventName] =
-                eventName in element ? propValue : null)
+            if (regexp.test(eventName)) {
+                element[eventName] = propValue
+            }
+
+            return
         }
 
-        utils.setAttribute(element, propName, propValue)
+        // if attr is a string then add it as attribute
+        if (typeof propValue === 'string')
+            return utils.setAttribute(element, propName, propValue)
     })
 
     return element
@@ -56,18 +60,18 @@ const addAttributes = (element, attrs) => {
 
 const fillFragmentByChildren = (fragment, props, child, index) => {
     if (child) {
+        if (child instanceof Array) {
+            return child.forEach(
+                fillFragmentByChildren.bind(this, fragment, props)
+            )
+        }
+
         if (typeof child === 'string' || typeof child === 'number') {
             const textnode = document.createTextNode(child)
 
             textnode.__DOMPosition__ = index
 
             return fragment.appendChild(textnode)
-        }
-
-        if (child instanceof Array) {
-            return child.forEach(
-                fillFragmentByChildren.bind(this, fragment, props)
-            )
         }
 
         if (utils.isCustomElement(child))

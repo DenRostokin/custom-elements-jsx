@@ -18,10 +18,10 @@ class CustomInput extends Component {
             const newEvent = { ...event, target: { ...event.target, value } }
 
             this.props.onChange(newEvent)
-        }
 
-        // disable updating values implicity
-        event.preventDefault()
+            // disable updating values implicity
+            event.preventDefault()
+        }
     }
 
     // onKeyPress doesn't trigger on backspace and delete actions

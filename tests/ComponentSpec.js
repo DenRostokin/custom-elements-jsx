@@ -48,13 +48,14 @@ describe('Custom Element', () => {
         document.body.removeChild(element)
     })
 
-    it('renders special attributes', () => {
+    it('renders special attributes using catch instruction', () => {
         const element = (
             <render-special-attrs
                 id="value"
                 role="info"
                 aria-labelledby="tab"
                 data-test="for-testing"
+                catch={['id', 'role', 'aria-labelledby', 'data-test']}
             />
         )
 
@@ -117,7 +118,13 @@ describe('Custom Element', () => {
 
     it('gets refs correctly', () => {
         class RefElement extends Component {
-            getRef = (element, attrs) => {
+            constructor() {
+                super()
+
+                this.getRef = this.getRef.bind(this)
+            }
+
+            getRef(element, attrs) {
                 this.ref = element
                 this.attrs = attrs
             }
@@ -141,7 +148,15 @@ describe('Custom Element', () => {
 
     it('adds event listeners correctly', () => {
         class EventElement extends Component {
-            onClick = () => (this.value = 'clicked')
+            constructor() {
+                super()
+
+                this.onClick = this.onClick.bind(this)
+            }
+
+            onClick() {
+                this.value = 'clicked'
+            }
 
             render() {
                 return <div onClick={this.onClick} />
@@ -222,9 +237,16 @@ describe('Custom element`s update function', () => {
         }
 
         class ChildElement extends Component {
-            value = 1
+            constructor() {
+                super()
 
-            increaseValue = () => this.value++
+                this.value = 1
+                this.increaseValue = this.increaseValue.bind(this)
+            }
+
+            increaseValue() {
+                this.value++
+            }
 
             render() {
                 return <h3>{this.value}</h3>

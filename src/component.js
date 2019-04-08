@@ -28,15 +28,13 @@ class Component extends HTMLElement {
     }
 
     _cloneEventHandlers(newChild = {}, existChild = {}) {
-        const keys = Object.keys(newChild) || []
         const regexp = /^(on[a-z]+)$/i
 
-        keys.forEach(key => {
-            // if key is an event name and some of events exist
+        for (let key in newChild) {
             if (regexp.test(key) && (existChild[key] || newChild[key])) {
                 existChild[key] = newChild[key]
             }
-        })
+        }
     }
 
     _cloneAttributes(newChild, existChild) {
@@ -203,9 +201,11 @@ class Component extends HTMLElement {
 
     setState(newState) {
         if (typeof newState === 'function') {
-            this.state = newState({ ...this.state }, { ...this.props })
+            const computedState = newState({ ...this.state }, { ...this.props })
+
+            this.state = { ...this.state, ...computedState }
         } else {
-            this.state = newState
+            this.state = { ...this.state, ...newState }
         }
 
         this.update()
