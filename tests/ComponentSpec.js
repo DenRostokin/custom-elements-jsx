@@ -229,10 +229,26 @@ describe('Custom fragment', () => {
 })
 
 describe('Custom element`s update function', () => {
-    it('does not delete children from DOM', () => {
+    it('does not reset children state after updating', () => {
         class RootElement extends Component {
+            constructor() {
+                super()
+
+                this.state = { value: 1 }
+                this.increaseValue = this.increaseValue.bind(this)
+            }
+
+            increaseValue() {
+                this.setState({ value: this.state.value + 1 })
+            }
+
             render() {
-                return <child-element />
+                return (
+                    <child-element
+                        value={this.state.value}
+                        increaseValue={this.increaseValue}
+                    />
+                )
             }
         }
 
@@ -240,16 +256,18 @@ describe('Custom element`s update function', () => {
             constructor() {
                 super()
 
-                this.value = 1
-                this.increaseValue = this.increaseValue.bind(this)
+                this.state = { count: 0 }
+                this.increaseCount = this.increaseCount.bind(this)
             }
 
-            increaseValue() {
-                this.value++
+            increaseCount() {
+                this.setState({ count: this.state.count + 1 })
             }
 
             render() {
-                return <h3>{this.value}</h3>
+                const { value } = this.props
+
+                return <h3>{value}</h3>
             }
         }
 
@@ -262,17 +280,77 @@ describe('Custom element`s update function', () => {
 
         let child = root.children[0]
 
-        child.increaseValue()
-
-        root.update()
+        child.increaseCount()
+        root.increaseValue()
 
         child = root.children[0]
 
-        expect(child.value).toBe(2)
+        // child was updated
         expect(child.outerHTML).toBe(
             '<child-element><h3>2</h3></child-element>'
         )
+        // but child state wasn't reset
+        expect(child.state.count).toBe(1)
 
         document.body.removeChild(root)
+    })
+
+    it('updates multiple children correctly', () => {
+        class ParentElement extends Component {
+            constructor() {
+                super()
+
+                this.state = { isShown: false }
+
+                this.showBlock = this.showBlock.bind(this)
+            }
+            showBlock() {
+                this.setState({ isShown: !this.state.isShown })
+            }
+
+            render() {
+                const { isShown } = this.state
+
+                return (
+                    <custom-fragment>
+                        {isShown && <div>Popup</div>}
+                        <second-child />
+                    </custom-fragment>
+                )
+            }
+        }
+
+        class SecondChild extends Component {
+            constructor() {
+                super()
+
+                this.state = { value: 1 }
+                this.increaseValue = this.increaseValue.bind(this)
+            }
+
+            increaseValue() {
+                this.setState({ value: this.state.value + 1 })
+            }
+
+            render() {
+                return null
+            }
+        }
+
+        window.customElements.define('parent-element', ParentElement)
+        window.customElements.define('second-child', SecondChild)
+
+        const parent = <parent-element />
+
+        document.body.appendChild(parent)
+
+        parent.children[0].increaseValue()
+        parent.showBlock()
+
+        expect(parent.children.length).toBe(2)
+        expect(parent.children[0].outerHTML).toBe('<div>Popup</div>')
+        expect(parent.children[1].state.value).toBe(2)
+
+        document.body.removeChild(parent)
     })
 })
