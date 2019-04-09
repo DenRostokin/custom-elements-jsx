@@ -48,13 +48,14 @@ describe('Custom Element', () => {
         document.body.removeChild(element)
     })
 
-    it('renders special attributes', () => {
+    it('renders special attributes using catch instruction', () => {
         const element = (
             <render-special-attrs
                 id="value"
                 role="info"
                 aria-labelledby="tab"
                 data-test="for-testing"
+                catch={['id', 'role', 'aria-labelledby', 'data-test']}
             />
         )
 
@@ -117,7 +118,13 @@ describe('Custom Element', () => {
 
     it('gets refs correctly', () => {
         class RefElement extends Component {
-            getRef = (element, attrs) => {
+            constructor() {
+                super()
+
+                this.getRef = this.getRef.bind(this)
+            }
+
+            getRef(element, attrs) {
                 this.ref = element
                 this.attrs = attrs
             }
@@ -141,7 +148,15 @@ describe('Custom Element', () => {
 
     it('adds event listeners correctly', () => {
         class EventElement extends Component {
-            onClick = () => (this.value = 'clicked')
+            constructor() {
+                super()
+
+                this.onClick = this.onClick.bind(this)
+            }
+
+            onClick() {
+                this.value = 'clicked'
+            }
 
             render() {
                 return <div onClick={this.onClick} />
@@ -210,5 +225,132 @@ describe('Custom fragment', () => {
         )
 
         document.body.removeChild(element)
+    })
+})
+
+describe('Custom element`s update function', () => {
+    it('does not reset children state after updating', () => {
+        class RootElement extends Component {
+            constructor() {
+                super()
+
+                this.state = { value: 1 }
+                this.increaseValue = this.increaseValue.bind(this)
+            }
+
+            increaseValue() {
+                this.setState({ value: this.state.value + 1 })
+            }
+
+            render() {
+                return (
+                    <child-element
+                        value={this.state.value}
+                        increaseValue={this.increaseValue}
+                    />
+                )
+            }
+        }
+
+        class ChildElement extends Component {
+            constructor() {
+                super()
+
+                this.state = { count: 0 }
+                this.increaseCount = this.increaseCount.bind(this)
+            }
+
+            increaseCount() {
+                this.setState({ count: this.state.count + 1 })
+            }
+
+            render() {
+                const { value } = this.props
+
+                return <h3>{value}</h3>
+            }
+        }
+
+        window.customElements.define('root-element', RootElement)
+        window.customElements.define('child-element', ChildElement)
+
+        const root = <root-element />
+
+        document.body.appendChild(root)
+
+        let child = root.children[0]
+
+        child.increaseCount()
+        root.increaseValue()
+
+        child = root.children[0]
+
+        // child was updated
+        expect(child.outerHTML).toBe(
+            '<child-element><h3>2</h3></child-element>'
+        )
+        // but child state wasn't reset
+        expect(child.state.count).toBe(1)
+
+        document.body.removeChild(root)
+    })
+
+    it('updates multiple children correctly', () => {
+        class ParentElement extends Component {
+            constructor() {
+                super()
+
+                this.state = { isShown: false }
+
+                this.showBlock = this.showBlock.bind(this)
+            }
+            showBlock() {
+                this.setState({ isShown: !this.state.isShown })
+            }
+
+            render() {
+                const { isShown } = this.state
+
+                return (
+                    <custom-fragment>
+                        {isShown && <div>Popup</div>}
+                        <second-child />
+                    </custom-fragment>
+                )
+            }
+        }
+
+        class SecondChild extends Component {
+            constructor() {
+                super()
+
+                this.state = { value: 1 }
+                this.increaseValue = this.increaseValue.bind(this)
+            }
+
+            increaseValue() {
+                this.setState({ value: this.state.value + 1 })
+            }
+
+            render() {
+                return null
+            }
+        }
+
+        window.customElements.define('parent-element', ParentElement)
+        window.customElements.define('second-child', SecondChild)
+
+        const parent = <parent-element />
+
+        document.body.appendChild(parent)
+
+        parent.children[0].increaseValue()
+        parent.showBlock()
+
+        expect(parent.children.length).toBe(2)
+        expect(parent.children[0].outerHTML).toBe('<div>Popup</div>')
+        expect(parent.children[1].state.value).toBe(2)
+
+        document.body.removeChild(parent)
     })
 })
