@@ -1,4 +1,4 @@
-const webpackConfig = require('./webpack.config.js')
+const webpackConfig = require('./webpack.common.js')
 
 module.exports = function(config) {
     return {
