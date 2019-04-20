@@ -18,6 +18,8 @@ module.exports = merge.smart(commontConfig, {
     output: {
         path: path.resolve(__dirname, 'lib'),
         filename: 'index.min.js',
+        library: 'jsx',
+        libraryTarget: 'umd',
     },
     plugins,
 })
