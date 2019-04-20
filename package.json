@@ -2,13 +2,13 @@
   "name": "custom-elements-jsx",
   "version": "2.0.0",
   "description": "JSX-render for custom elements",
-  "main": "lib",
+  "main": "lib/index.min.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DenRostokin/custom-elements-jsx.git"
   },
   "scripts": {
-    "build": "rimraf lib/* && babel src --out-dir lib",
+    "build": "webpack --progress --config webpack.build.js",
     "livereload": "nodemon --ignore 'lib/' --exec npm run build",
     "test": "export NODE_ENV='test' && karma start",
     "test:watch": "export NODE_ENV='test' && karma start karmaWatch.config.js",
@@ -35,7 +35,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
-    "clean-webpack-plugin": "^1.0.0",
+    "clean-webpack-plugin": "^2.0.1",
     "eslint": "^5.11.1",
     "eslint-plugin-jasmine": "^2.10.1",
     "istanbul": "^0.4.5",
@@ -48,7 +48,8 @@
     "nodemon": "^1.18.9",
     "pre-commit": "^1.2.2",
     "prettier-eslint": "^8.8.2",
-    "rimraf": "^2.6.2",
-    "webpack": "^4.29.4"
+    "webpack": "^4.29.4",
+    "webpack-cli": "^3.3.0",
+    "webpack-merge": "^4.2.1"
   }
 }
